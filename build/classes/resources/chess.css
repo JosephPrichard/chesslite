@@ -1,0 +1,338 @@
+#background {
+    -fx-background-color: rgb(240,240,240);
+    -fx-background-repeat: stretch;
+    -fx-background-size: 900 506;
+    -fx-background-position: center center;
+    -fx-effect: dropshadow(three-pass-box, black, 30, 0.5, 0, 0);
+}
+
+#homefont {
+    -fx-font-family: "Roboto";
+    -fx-text-fill: rgb(80,80,80);
+}
+
+#radiobutton{
+    -fx-font-size:17px;
+    -fx-font-family: "Roboto";
+    -fx-text-fill: rgb(80,80,80);
+    -fx-focus-traversable: false;
+    -fx-mark-highlight-color: transparent ;
+    -fx-mark-color: transparent;
+    -fx-background-color: rgb(220,220,220);
+    -fx-effect: dropshadow(gaussian , rgba(0,0,0,0.7) , 3,0,0,1); 
+}
+
+#combobox {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-background-color: rgb(220,220,220);
+    -fx-text-fill: rgb(80,80,80);
+    -fx-font-family: "Roboto";
+    -fx-background-insets: 0, 1, 2;
+    outline-color: red;
+}
+
+.combo-box .list-cell{
+    -fx-background-color: white;
+    -fx-text-fill: rgb(80,80,80);
+}
+
+.combo-box-popup .list-view .list-cell:hover {
+    -fx-background-color: rgb(200,200,200);
+}
+
+.combo-box .cell:selected {
+    -fx-background-color: rgb(230,230,230);
+}
+
+.combo-box .arrow-button{
+    -fx-background-color: rgb(230,230,230);
+}
+
+#radiobutton:hover{
+    -fx-background-color: rgb(230,230,230);
+}
+
+#radiobutton:selected {
+    -fx-font-weight: bold;
+    -fx-background-color: rgb(160,178,102);
+}
+
+#sidebutton{
+    -fx-font-family: "Roboto";
+    -fx-font-size:18;
+    -fx-text-fill: rgb(80,80,80);
+    -fx-focus-traversable: false;
+    -fx-mark-highlight-color: transparent ;
+    -fx-mark-color: transparent;
+    -fx-background-color: rgb(220,220,220);
+    -fx-effect: dropshadow(gaussian , rgba(0,0,0,0.7) , 3,0,0,1); 
+}
+
+#sidebutton:hover{
+    -fx-background-color: rgb(230,230,230);
+}
+
+#sidebutton:selected {
+    -fx-background-color: rgb(160,178,102);
+}
+
+#largefont {
+    -fx-font-family: "Roboto";
+    -fx-text-fill: rgb(80,80,80);
+}
+
+#smallfont {
+    -fx-font-family: "Roboto";
+    -fx-text-fill: rgb(80,80,80);
+}
+
+#tinyfont {
+    -fx-font-family: "Roboto";
+    -fx-font-size:15;
+    -fx-text-fill: rgb(80,80,80);
+}
+
+#darkfont {
+    -fx-font-family: "Roboto";
+    -fx-font-size:15;
+    -fx-font-weight: bold;
+    -fx-text-fill: rgb(168,138,101);
+    -fx-padding: 3px;
+}
+
+#lightfont {
+    -fx-font-family: "Roboto";
+    -fx-font-size:15;
+    -fx-font-weight: bold;
+    -fx-text-fill: rgb(233,217,183);
+    -fx-padding: 3px;
+}
+
+#appbutton {
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-background-radius: 0;
+    -fx-background-color: rgb(210,210,210);
+    -fx-effect: dropshadow(gaussian , rgba(0,0,0,0.7) , 3,0,0,1); 
+}
+
+#appbutton:hover {
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-background-radius: 0;
+    -fx-background-color: rgb(230,230,230);
+    -fx-effect: dropshadow(gaussian , rgba(0,0,0,0.7) , 3,0,0,1); 
+}
+
+#appbutton:pressed {
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-background-radius: 0;
+    -fx-background-color: rgb(190,190,190);
+    -fx-effect: dropshadow(gaussian , rgba(0,0,0,0.7) , 3,0,0,1); 
+}
+
+#selectbutton{
+    -fx-font-size:20;
+}
+
+#homebutton {
+    -fx-font-size:20px;
+    -fx-text-fill: rgb(100,100,100);
+    -fx-font-family: "Roboto";
+    -fx-background-color: rgb(248,248,248);
+    -fx-background-radius: 5px;
+    -fx-border-radius: 5px;
+    -fx-border-width: 0px;
+    -fx-background-insets: 0, 1, 2;
+    -fx-padding: 3 30 3 30;
+    -fx-effect: dropshadow(gaussian , rgba(0,0,0,0.7) , 3,0,0,1); 
+}
+
+#homebutton:hover{
+    -fx-background-color: rgb(255,255,255);
+}
+
+#homebutton:pressed{
+    -fx-text-fill: rgb(100,100,100);
+    -fx-background-color: rgb(235,235,235);
+}
+
+#promotionbutton {
+    -fx-text-fill: rgb(100,100,100);
+    -fx-font-weight: bold;
+    -fx-font-family: "Roboto";
+    -fx-border-width: 0px;
+    -fx-effect: dropshadow(gaussian , rgba(0,0,0,0.7) , 3,0,0,1); 
+}
+
+#board {
+    -fx-effect: dropshadow(gaussian , rgba(0,0,0,0.7) , 6,0,0,1); 
+}
+
+#bgpromotion {
+    -fx-background-color: rgb(230,230,230);
+    -fx-effect: dropshadow(gaussian , rgba(0,0,0,0.7) , 3,0,0,1); 
+}
+
+.scroll-pane:focused {
+  -fx-background-color: transparent,-fx-box-border,-fx-control-inner-background;
+  -fx-background-insets: -1.4, 0, 1;
+  -fx-background-radius: 1.4, 0, 0;
+  -fx-padding: 1; 
+}
+
+.scroll-pane {
+    -fx-border-radius:5;
+}
+
+.noheader .column-header-background {
+    -fx-max-height: 0;
+    -fx-pref-height: 0;
+    -fx-min-height: 0;
+}
+
+#scoreoutsets {
+    -fx-font-family: "Roboto";
+    -fx-font-size:20;
+    -fx-text-fill: rgb(80,80,80);
+    -fx-background-color: rgb(255,255,255);
+    -fx-effect: dropshadow(gaussian , rgba(0,0,0,0.7) , 3,0,0,1); 
+}
+
+#timerbgleft {
+    -fx-border-width: 0 0 1 0; -fx-border-color: transparent transparent rgba(60,60,60,0.2) transparent;
+    -fx-background-color: rgb(255,255,255);
+}
+
+#timerbgright {
+    -fx-border-width: 0 1 1 0; -fx-border-color: transparent rgba(60,60,60,0.2) rgba(60,60,60,0.2) transparent;
+    -fx-background-color: rgb(255,255,255);
+}
+
+#timerbgleftred {
+    -fx-border-width: 0 0 1 0; -fx-border-color: transparent transparent rgba(60,60,60,0.2) transparent;
+    -fx-background-color: rgb(180,43,33);
+}
+
+#timerbgrightred {
+    -fx-border-width: 0 1 1 0; -fx-border-color: transparent rgba(60,60,60,0.2) rgba(60,60,60,0.2) transparent;
+    -fx-background-color: rgb(180,43,33);
+}
+
+#timerbgleftpink {
+    -fx-border-width: 0 0 1 0; -fx-border-color: transparent transparent rgba(60,60,60,0.2) transparent;
+    -fx-background-color: rgb(210,155,153);
+}
+
+#timerbgrightpink {
+    -fx-border-width: 0 1 1 0; -fx-border-color: transparent rgba(60,60,60,0.2) rgba(60,60,60,0.2) transparent;
+    -fx-background-color: rgb(210,155,153);
+}
+
+#smallborderleft {
+    -fx-font-size:35px;
+    -fx-border-width: 0 0 1 0; -fx-border-color: transparent transparent rgba(60,60,60,0.2) transparent;
+}
+
+#smallborderright {
+    -fx-font-size:35px;
+    -fx-border-width: 0 1 1 0; -fx-border-color: transparent rgba(60,60,60,0.2) rgba(60,60,60,0.2) transparent;
+}
+
+#lightborderleft {
+    -fx-border-width: 0 0 1 0; -fx-border-color: transparent transparent rgba(60,60,60,0.2) transparent;
+}
+
+#lightborderright {
+    -fx-border-width: 0 1 1 0; -fx-border-color: transparent rgba(60,60,60,0.2) rgba(60,60,60,0.2) transparent;
+}
+
+#topborder {
+    -fx-border-width: 1 0 0 0; -fx-border-color: rgba(60,60,60,0.2) transparent transparent transparent;
+}
+
+#sideborder{
+    -fx-border-width: 0 1 0 0; -fx-border-color: transparent rgba(60,60,60,0.2) transparent transparent;
+}
+
+#scrollpanebg {
+    -fx-border-width: 1 0 0 0; -fx-border-color: rgba(60,60,60,0.2) transparent transparent transparent;
+    -fx-background-color: rgb(248,248,248);
+}
+
+#scrollborder {
+    -fx-background-color: rgb(248,248,248);
+    -fx-border-width: 0 1 0 1; -fx-border-color: transparent rgba(60,60,60,0.2) transparent rgba(60,60,60,0.2);
+}
+
+#topbar {
+    -fx-background-color: rgb(245,245,245);
+    -fx-border-width: 1.5 0 1.25 0; -fx-border-color: rgba(255,255,255,1) transparent rgba(60,60,60,0.2) transparent;
+}
+
+#darkborder {
+    -fx-border-width: 0 0 0.5 0; -fx-border-color: transparent transparent rgba(60,60,60,0.2) transparent;
+}
+
+#ply {
+    -fx-cursor: hand;
+}
+
+#plyhighlighted {
+    -fx-cursor: hand;
+    -fx-background-color: rgba(216,228,245,0.7);
+}
+
+#boardbutton {
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-background-radius: 0;
+    -fx-background-color: rgb(225,225,225);
+    -fx-effect: dropshadow(gaussian , rgba(0,0,0,0.7) , 3,0,0,1); 
+}
+
+#boardbutton:hover {
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-background-radius: 0;
+    -fx-background-color: rgb(240,240,240);
+    -fx-effect: dropshadow(gaussian , rgba(0,0,0,0.7) , 3,0,0,1); 
+}
+
+#boardbutton:pressed {
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-background-radius: 0;
+    -fx-background-color: rgb(205,205,205);
+    -fx-effect: dropshadow(gaussian , rgba(0,0,0,0.7) , 3,0,0,1); 
+}
+
+#barbutton {
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-background-radius: 0;
+    -fx-background-color: transparent;
+}
+
+#barbutton:hover {
+    -fx-border-color: rgb(200,200,200);
+    -fx-border-width: 1;
+    -fx-background-radius: 1;
+    -fx-background-color: transparent;
+}
+
+#barbutton:pressed {
+    -fx-background-color: rgb(230,230,230);
+    -fx-border-color: rgb(200,200,200);
+    -fx-border-width: 1;
+    -fx-background-radius: 1;
+}
+
+
+
+
+
+
+
