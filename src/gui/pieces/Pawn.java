@@ -370,7 +370,7 @@ public final class Pawn extends Piece{
      */
     @Override
     protected void renderVisualizables() {
-        super.renderSelectables();
+        super.renderVisualizables();
         avaliableEnPassant.forEach((avaliableTile) -> {
             getController().addVisualizable(avaliableTile);
         });
@@ -388,7 +388,7 @@ public final class Pawn extends Piece{
         ArrayList<int[]> locations = new ArrayList<>();
         Tile tileLoc = tiles[row][col];
         Tile tileBelow =  isWhite() ? tiles[row-1][col] : tiles[row+1][col];
-        if(tileLoc.hasPiece() || (tileBelow.hasPiece() && tileBelow.getPiece().isPawn())) {
+        if(tileLoc.hasPiece() || (tileBelow.hasPiece() && tileBelow.getPiece().isPawn() && tileBelow.getPiece() != this)) {
             if(isWhite()) {
                 if(withinBounds(row-1,col+1)) {
                     Tile tile = tiles[row-1][col+1];

@@ -141,7 +141,7 @@ public final class King extends Piece{
      */
     @Override
     protected void renderVisualizables() {
-        super.renderSelectables();
+        super.renderVisualizables();
         avaliableCastle.forEach((avaliableTile) -> {
             getController().addVisualizable(avaliableTile);
         });
