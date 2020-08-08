@@ -21,7 +21,6 @@ public abstract class Piece extends StackPane {
      * Empty - O 
      * Attacking - X 
      * This Piece - other symbol 
-     * 
      */
     
     public static final double TILE_SIZE = 100*ChessLite.SCALE;

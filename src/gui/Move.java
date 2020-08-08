@@ -83,9 +83,10 @@ public class Move {
      * @param canKingSideCastleIn, whether or not king could castle last Move
      * @param canQueenSideCastleIn, whether or not queen could castle last Move
      * @param forWhite, side move is for
+     * @param taken whether a piece was taken this turn
      */
     public Move(int oldrow, int oldcol, int newrow, int newcol, Piece moved, byte[][] boardIn, 
-            boolean canKingSideCastleIn, boolean canQueenSideCastleIn, boolean forWhite) {
+            boolean canKingSideCastleIn, boolean canQueenSideCastleIn, boolean forWhite, boolean taken) {
         oldPos[0] = oldrow;
         oldPos[1] = oldcol;
         newPos[0] = newrow;
@@ -95,7 +96,11 @@ public class Move {
         board = boardIn;   
         canKingSideCastle = canKingSideCastleIn;
         canQueenSideCastle = canQueenSideCastleIn;
-        notation = calcPiecePrefix(pieceMoved,oldPos,newPos) + getCharacterNotation(newPos[1]) + (newPos[0]+1);
+        if(!taken) {
+            notation = calcPiecePrefix(pieceMoved,oldPos,newPos) + getCharacterNotation(newPos[1]) + (newPos[0]+1);
+        } else {
+            notation = calcPiecePrefix(pieceMoved,oldPos,newPos) + "x" + getCharacterNotation(newPos[1]) + (newPos[0]+1);
+        }
         if(forWhite) {
             if(moved.getTile().getCol() == Game.LOWER_BOUNDARY && moved.getTile().getRow() == Game.LOWER_BOUNDARY) {
                 canQueenSideCastle = false;

@@ -246,12 +246,13 @@ public class GameInfo {
      * @param newTile, tile to move to 
      */
     public void makeMove(Tile oldTile, Tile newTile) {
+        boolean taken = newTile.hasPiece();
         currentBoard[newTile.getRow()][newTile.getCol()] = currentBoard[oldTile.getRow()][oldTile.getCol()];
         currentBoard[oldTile.getRow()][oldTile.getCol()] = EMPTY;
         moveNum++;
         Move move = new Move(oldTile.getRow(), oldTile.getCol(), newTile.getRow(), 
                 newTile.getCol(), oldTile.getPiece(), cloneArray(currentBoard),
-                canKingSideCastle(), canQueenSideCastle(), moveNum % 2 == 0);
+                canKingSideCastle(), canQueenSideCastle(), moveNum % 2 == 0, taken);
         moves.add(move);
     }
     
@@ -273,7 +274,7 @@ public class GameInfo {
         moveNum++;
         Move move = new Move(oldTile.getRow(), oldTile.getCol(), newTile.getRow(), 
                 newTile.getCol(), oldTile.getPiece(), cloneArray(currentBoard), 
-                canKingSideCastle(), canQueenSideCastle(), moveNum % 2 == 0);
+                canKingSideCastle(), canQueenSideCastle(), moveNum % 2 == 0, false);
         moves.add(move);
     }
     
@@ -289,12 +290,13 @@ public class GameInfo {
      * @param promotionTo piece to be promoted to
      */
     public void makeMovePromotion(Tile oldTile, Tile newTile, Piece promotionTo) {
+        boolean taken = newTile.hasPiece();
         currentBoard[newTile.getRow()][newTile.getCol()] = promotionTo.getInfoCode();
         currentBoard[oldTile.getRow()][oldTile.getCol()] = EMPTY;
         moveNum++;
         Move move = new Move(oldTile.getRow(), oldTile.getCol(), newTile.getRow(), 
                 newTile.getCol(), oldTile.getPiece(), cloneArray(currentBoard), 
-                canKingSideCastle(), canQueenSideCastle(), moveNum % 2 == 0);
+                canKingSideCastle(), canQueenSideCastle(), moveNum % 2 == 0,taken);
         moves.add(move);
     }
     
