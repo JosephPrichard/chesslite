@@ -252,8 +252,12 @@ public class Move {
      * @return whether or not enPassant can be performed
      */
     public boolean canEnPassant(boolean forWhite) {
-        return pieceMoved.isPawn() && ((forWhite && oldPos[0] == 1 && newPos[0] == 3) || 
-                (!forWhite && oldPos[0] == 6 && newPos[0] == 4));
+        if(pieceMoved != null) {
+            return pieceMoved.isPawn() && ((forWhite && oldPos[0] == 1 && newPos[0] == 3) || 
+                    (!forWhite && oldPos[0] == 6 && newPos[0] == 4));
+        } else {
+            return false;
+        }
     }
 
 }

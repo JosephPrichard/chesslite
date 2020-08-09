@@ -8,7 +8,7 @@
   </information>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="ChessLite.jar" size="626169" download="eager" />
+    <jar href="ChessLite.jar" size="626196" download="eager" />
   </resources>
   <applet-desc  width="800" height="600" main-class="com.javafx.main.NoJavaFXFallback"  name="ChessLite" >
     <param name="requiredFXVersion" value="8.0+"/>

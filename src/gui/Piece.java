@@ -16,7 +16,7 @@ import javafx.util.Duration;
  */
 public abstract class Piece extends StackPane {
     
-    /*
+    /**
      * Attack Pattern Key: 
      * Empty - O 
      * Attacking - X 

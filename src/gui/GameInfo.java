@@ -88,18 +88,18 @@ public class GameInfo {
      * @return canCastle
      */
     public boolean canCastle(boolean forWhiteKing, boolean kingSide) {
-        Move currentMove = moves.get(moveNum);
         int i = forWhiteKing ? 0 : 1;
-        while(i < moveNum+1) {
+        while(i < moveNum) {
             Move move = moves.get(i);
-            if(move.isCastle() || (move.hasPieceMoved() && move.getPieceMoved().isKing())) {
+            if(move.isCastle() || (move.hasPieceMoved() && move.getPieceMoved().isKing() 
+                    && move.getPieceMoved().isWhite() == forWhiteKing)) {
                 return false;
             }
             i=i+2;
         }
-        if(kingSide && !currentMove.canKingSideCastle()) {
+        if(kingSide && !canKingSideCastle(-1)) {
             return false;
-        } else if(!kingSide && !currentMove.canQueenSideCastle()) {
+        } else if(!kingSide && !canQueenSideCastle(-1)) {
             return false;
         }
         return true;
@@ -211,11 +211,12 @@ public class GameInfo {
     
     /**
      * Checks moves to check if king can castle, if on initial position can always castle
+     * @param offset, the number of moves to go back to
      * @return anKingSideCastle
      */
-    public boolean canKingSideCastle() {
-        int num = moveNum - 2;
-        if(!(num < 0)) {
+    public boolean canKingSideCastle(int offset) {
+        int num = moveNum - offset;
+        if((num < moves.size()) && num > -1) {
             return moves.get(num).canKingSideCastle();
         } else {
             return true;
@@ -224,11 +225,12 @@ public class GameInfo {
     
     /**
      * Checks moves to check if king can castle, if on initial position can always castle
+     * @param offset, the number of moves to go back to
      * @return anKingSideCastle
      */
-    public boolean canQueenSideCastle() {
-        int num = moveNum - 2;
-        if(!(num < 0)) {
+    public boolean canQueenSideCastle(int offset) {
+        int num = moveNum - offset;
+        if((num < moves.size()) && num > -1) {
             return moves.get(num).canQueenSideCastle();
         } else {
             return true;
@@ -252,7 +254,7 @@ public class GameInfo {
         moveNum++;
         Move move = new Move(oldTile.getRow(), oldTile.getCol(), newTile.getRow(), 
                 newTile.getCol(), oldTile.getPiece(), cloneArray(currentBoard),
-                canKingSideCastle(), canQueenSideCastle(), moveNum % 2 == 0, taken);
+                canKingSideCastle(-2), canQueenSideCastle(-2), moveNum % 2 == 0, taken);
         moves.add(move);
     }
     
@@ -274,7 +276,7 @@ public class GameInfo {
         moveNum++;
         Move move = new Move(oldTile.getRow(), oldTile.getCol(), newTile.getRow(), 
                 newTile.getCol(), oldTile.getPiece(), cloneArray(currentBoard), 
-                canKingSideCastle(), canQueenSideCastle(), moveNum % 2 == 0, false);
+                canKingSideCastle(-2), canQueenSideCastle(-2), moveNum % 2 == 0, false);
         moves.add(move);
     }
     
@@ -296,7 +298,7 @@ public class GameInfo {
         moveNum++;
         Move move = new Move(oldTile.getRow(), oldTile.getCol(), newTile.getRow(), 
                 newTile.getCol(), oldTile.getPiece(), cloneArray(currentBoard), 
-                canKingSideCastle(), canQueenSideCastle(), moveNum % 2 == 0,taken);
+                canKingSideCastle(-2), canQueenSideCastle(-2), moveNum % 2 == 0,taken);
         moves.add(move);
     }
     
