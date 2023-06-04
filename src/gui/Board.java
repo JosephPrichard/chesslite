@@ -6,13 +6,15 @@
  */
 package gui;
 
-import static gui.Game.HEIGHT;
-import static gui.Game.WIDTH;
-import java.util.ArrayList;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+
+import java.util.ArrayList;
+
+import static gui.Game.HEIGHT;
+import static gui.Game.WIDTH;
 
 /**
  *
@@ -26,18 +28,18 @@ public class Board {
         PieceType.WhiteRook, PieceType.WhiteQueen, PieceType.WhiteKing, 
         PieceType.BlackPawn, PieceType.BlackBishop, PieceType.BlackKnight,
         PieceType.BlackRook, PieceType.BlackQueen, PieceType.BlackKing};
-    public static int UPPER_BOUND = 8;
-    public static int LOWER_BOUND = -1;
+    public static final int UPPER_BOUND = 8;
+    public static final int LOWER_BOUND = -1;
     
     private Pane boardGUI;
-    private final Tile[][] tiles = new Tile[WIDTH][HEIGHT]; //board tiles
+    private final Tile[][] tiles = new Tile[HEIGHT][WIDTH]; //board tiles
     private final ArrayList<Piece> blackNotKing = new ArrayList<>(); //pieces
     private final ArrayList<Piece> whiteNotKing = new ArrayList<>();
     private Piece blackKing; //kings
     private Piece whiteKing;
     private final ArrayList<Tile> attackingKing = new ArrayList<>(); //tiles attacking King
-    private final ArrayList<Tile> attackWhiteListed = new ArrayList<>(); //avaliable tiles during attack
-    private final ArrayList<Tile> kingCanMove = new ArrayList<>(); //avaliable tiles for King
+    private final ArrayList<Tile> attackWhiteListed = new ArrayList<>(); //available tiles during attack
+    private final ArrayList<Tile> kingCanMove = new ArrayList<>(); //available tiles for King
     
     /**
      * Normalizes a value direction within the context of Chess to be quantifiable into
@@ -47,7 +49,7 @@ public class Board {
      * @param num, the number to be normalized
      * @return the normalized value
      */
-    public static final int normalize(int num) {
+    public static int normalize(int num) {
         return num == 0 ? 0 : num/Math.abs(num);
     }
     
@@ -58,7 +60,7 @@ public class Board {
      * @param col, the column for the position
      * @return true or false
      */
-    protected static final boolean withinBounds(int row, int col) {
+    protected static boolean withinBounds(int row, int col) {
         return (row < UPPER_BOUND && row > LOWER_BOUND) && (col < UPPER_BOUND && col > LOWER_BOUND);
     }
     
@@ -140,16 +142,12 @@ public class Board {
         Piece king = white ? whiteKing : blackKing;
         attackingKing(king,attackingKing);
         kingCanMove(king,attackingKing,kingCanMove);
-        king.calcAvaliableMoves();
+        king.calcAvailableMoves();
         attackWhiteListed(attackingKing,king,attackWhiteListed);
         if(white) {
-            whiteNotKing.forEach((piece) -> {
-                piece.calcAvaliableMoves();
-            });
+            whiteNotKing.forEach(Piece::calcAvailableMoves);
         } else {
-            blackNotKing.forEach((piece) -> {
-                piece.calcAvaliableMoves();
-            });
+            blackNotKing.forEach(Piece::calcAvailableMoves);
         }
     }
     
@@ -326,7 +324,7 @@ public class Board {
      * Calculates the Tiles a given King can move to given the tiles currently attacking
      * said King and writes the tiles to an ArrayList
      * 
-     * Calculation iterates through the avaliable diagonal and horizontal positions
+     * Calculation iterates through the available diagonal and horizontal positions
      * and performs a basic availability evaluation, but with 2 additional rules:
      * The King cannot move to a square that is inCheck relative to its own type
      * (Utilizes Board::inCheck)
@@ -344,10 +342,10 @@ public class Board {
         int row = king.getTile().getRow();
         int col = king.getTile().getCol();
         
-        int diagonalOffsets[][] = {{1,1},{1,-1},{-1,1},{-1,-1}};
-        int dkc[][] = {{2,2},{1,2},{2,1},{0,2},{2,0}}; //diagonal king check
-        int horizontalOffsets[][] = {{1,0},{0,1},{-1,0},{0,-1}};
-        int hkc[][][] = {{{2,1},{2,0},{2,-1}},{{1,2},{0,2},{-1,2}},
+        int[][] diagonalOffsets = {{1,1},{1,-1},{-1,1},{-1,-1}};
+        int[][] dkc = {{2,2},{1,2},{2,1},{0,2},{2,0}}; //diagonal king check
+        int[][] horizontalOffsets = {{1,0},{0,1},{-1,0},{0,-1}};
+        int[][][] hkc = {{{2,1},{2,0},{2,-1}},{{1,2},{0,2},{-1,2}},
             {{-2,1},{-2,0},{-2,-1}},{{1,-2},{0,-2},{-1,-2}}}; //horizontal king check
         
         //diagonals
@@ -419,7 +417,7 @@ public class Board {
      */
     public void attackWhiteListed(ArrayList<Tile> attackingKing, Piece king, ArrayList<Tile> whiteListed) {
         whiteListed.clear();
-        if(attackingKing.isEmpty() || attackingKing.size() > 1) {
+        if(attackingKing.size() != 1) {
             return;
         }
         Tile attack = attackingKing.get(0);
@@ -470,13 +468,13 @@ public class Board {
         Pane boardUI = new Pane();
         boolean isLight = false;
         //i is row, j is column
-        for(int i = 0; i < WIDTH; i++) {
-            for(int j = 0; j < HEIGHT; j++) {
+        for(int i = 0; i < HEIGHT; i++) {
+            for(int j = 0; j < WIDTH; j++) {
                 Tile tile = new Tile(isLight, i, j, true, game);
                 tiles[i][j] = tile;
                 boardUI.getChildren().add(tile);
                 isLight = !isLight;
-                Piece piece = NOTATION_TO_CONSTRUCTOR_TABLE[board[i][j]].createPiece(tiles[i][j]);
+                Piece piece = NOTATION_TO_CONSTRUCTOR_TABLE[board[i][j]].createPiece(tiles[i][j],game.getApp().getPath());
                 if(piece != null) {
                     if(piece.isWhite()) {
                         if(piece.isKing()) {
@@ -501,7 +499,7 @@ public class Board {
                     StackPane.setAlignment(notationLabel, Pos.BOTTOM_LEFT);
                     tile.addLabel(notationLabel);
                 } 
-                if(j == (WIDTH - 1)) {
+                if(j == (HEIGHT - 1)) {
                     Label notationLabel = new Label(Integer.toString(i+1));
                     notationLabel.setId("tinyfont");
                     StackPane.setAlignment(notationLabel, Pos.TOP_RIGHT);
@@ -529,13 +527,13 @@ public class Board {
         Pane boardUI = new Pane();
         boolean IsLight = false;
         //i is row, j is column
-        for(int i = 0; i < WIDTH; i++) {
-            for(int j = 0; j < HEIGHT; j++) {
+        for(int i = 0; i < HEIGHT; i++) {
+            for(int j = 0; j < WIDTH; j++) {
                 Tile tile = new Tile(IsLight, i, j, false, game);
                 tiles[i][j] = tile;
                 boardUI.getChildren().add(tile);
                 IsLight = !IsLight;
-                Piece piece = NOTATION_TO_CONSTRUCTOR_TABLE[board[i][j]].createPiece(tiles[i][j]);
+                Piece piece = NOTATION_TO_CONSTRUCTOR_TABLE[board[i][j]].createPiece(tiles[i][j],game.getApp().getPath());
                 if(piece != null) {
                     if(piece.isWhite()) {
                         if(piece.isKing()) {
@@ -554,7 +552,7 @@ public class Board {
                     boardUI.getChildren().add(piece);
                     piece.toFront();
                 }
-                if(i == HEIGHT-1) {
+                if(i == WIDTH-1) {
                     Label notationLabel = new Label(getCharacterNotation(j));
                     StackPane.setAlignment(notationLabel, Pos.BOTTOM_LEFT);
                     tile.addLabel(notationLabel);

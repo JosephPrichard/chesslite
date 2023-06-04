@@ -5,7 +5,6 @@
  */
 package gui;
 
-import static gui.Game.BAR_WIDTH;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.geometry.Insets;
@@ -43,19 +42,20 @@ public class TimedGame extends Game {
      * @param timeInSeconds, the total time for each side
      * @param incrementInSeconds, the increment in seconds after a move
      * @param stage, the stage game belongs to
-     * @param timertype, the type of timer used in game re construction
+     * @param timerType, the type of timer used in game re construction
+     * @param app, the application object
      */
-    public TimedGame(boolean whiteStart, double timeInSeconds, double incrementInSeconds, Stage stage, int timertype) {
-        super(whiteStart, stage);
-        setTimerType(timertype);
+    public TimedGame(boolean whiteStart, double timeInSeconds, double incrementInSeconds, Stage stage, int timerType, ChessLite app) {
+        super(whiteStart, stage, app);
+        setTimerType(timerType);
         blackValue = timeInSeconds;
         whiteValue = timeInSeconds;
         blackTimerGUI = new Label(convertToDisplayFormat((int) blackValue));
         whiteTimerGUI = new Label(convertToDisplayFormat((int) whiteValue));
         whiteTimerGUI.setTextFill(Color.rgb(80, 80, 80));
         blackTimerGUI.setTextFill(Color.rgb(80, 80, 80));
-        whiteTimerGUI.setFont(new Font("Roboto",43*ChessLite.SCALE));
-        blackTimerGUI.setFont(new Font("Roboto",43*ChessLite.SCALE));
+        whiteTimerGUI.setFont(new Font("Roboto",43*getApp().getScale()));
+        blackTimerGUI.setFont(new Font("Roboto",43*getApp().getScale()));
         increment = incrementInSeconds;
         whiteTimer = new Timeline();
         blackTimer = new Timeline();
@@ -103,12 +103,13 @@ public class TimedGame extends Game {
      * @param timeInSeconds, the total time for each side
      * @param incrementInSeconds, the increment in seconds after a move
      * @param stage, the stage game belongs to
-     * @param timertype, the type of timer used in game re construction
+     * @param timerType, the type of timer used in game re construction
+     * @param app, application object
      * @return a constructed Timed Game
      */
-    public static final TimedGame constructTimedGame(boolean whiteStart, double timeInSeconds,
-            double incrementInSeconds, Stage stage, int timertype) {
-        TimedGame game = new TimedGame(whiteStart, timeInSeconds, incrementInSeconds, stage, timertype);
+    public static TimedGame constructTimedGame(boolean whiteStart, double timeInSeconds,
+                                               double incrementInSeconds, Stage stage, int timerType, ChessLite app) {
+        TimedGame game = new TimedGame(whiteStart, timeInSeconds, incrementInSeconds, stage, timerType, app);
         game.initBoard(whiteStart);
         game.initRoot();
         game.preGame();
@@ -121,11 +122,11 @@ public class TimedGame extends Game {
         HBox topBar = constructTopBar();
         HBox topBorder = constructTopBorder();
         AnchorPane.setTopAnchor(topBar, 1.0);
-        AnchorPane.setTopAnchor(getBoardGUI(), TOP_BAR_HEIGHT + 20.0);
+        AnchorPane.setTopAnchor(getBoardGUI(), getTopBarHeight() + 20.0);
         AnchorPane.setLeftAnchor(getBoardGUI(), 15.0);
         AnchorPane.setTopAnchor(getSideBar(), ((getStage().getHeight() - 
-                (ELEMENT_HEIGHT + ELEMENT_HEIGHT + SCOREBOARD_HEIGHT + ELEMENT_HEIGHT))/2)+10);
-        AnchorPane.setLeftAnchor(getSideBar(), (10 + BOARD_SIZE) + (getStage().getWidth() - 10 - BOARD_SIZE - BAR_WIDTH) / 2);
+                (getElementHeight() + getElementHeight() + getScoreBoardHeight() + getElementHeight()))/2)+10);
+        AnchorPane.setLeftAnchor(getSideBar(), (10 + getBoardSize()) + (getStage().getWidth() - 10 - getBoardSize() - getBarWidth()) / 2);
         getRoot().getChildren().addAll(topBorder,topBar,getBoardGUI(), getSideBar());
     }
 
@@ -156,16 +157,14 @@ public class TimedGame extends Game {
     public Button constructBackButton() {
         backButton = new Button();
         ImageView image = new ImageView(new Image("/resources/arrowsmall.png"));
-        image.setFitHeight(25 * ChessLite.SCALE);
-        image.setFitWidth(25 * ChessLite.SCALE);
+        image.setFitHeight(25 * getApp().getScale());
+        image.setFitWidth(25 * getApp().getScale());
         backButton.setGraphic(image);
-        backButton.setMinSize(50 * ChessLite.SCALE, 50 * ChessLite.SCALE);
-        backButton.setMaxSize(50 * ChessLite.SCALE, 50 * ChessLite.SCALE);
+        backButton.setMinSize(50 * getApp().getScale(), 50 * getApp().getScale());
+        backButton.setMaxSize(50 * getApp().getScale(), 50 * getApp().getScale());
         backButton.setFocusTraversable(false);
         backButton.setId("boardbutton");
-        backButton.setOnAction((event) -> {
-            takeBackMove();
-        });
+        backButton.setOnAction((event) -> takeBackMove());
         return backButton;
     }
 
@@ -175,7 +174,7 @@ public class TimedGame extends Game {
         whiteTimer.stop();
         blackTimer.stop();
         backButton.setDisable(true);
-        clearSelectables();
+        clearSelectable();
     }
 
     @Override
@@ -214,16 +213,16 @@ public class TimedGame extends Game {
     public VBox constructScoreBoard() {
         VBox sidebar = new VBox();
         sidebar.setId("scoreoutsets");
-        sidebar.setMinSize(BAR_WIDTH, ELEMENT_HEIGHT + ELEMENT_HEIGHT + SCOREBOARD_HEIGHT + ELEMENT_HEIGHT);
-        sidebar.setMaxSize(BAR_WIDTH, ELEMENT_HEIGHT + ELEMENT_HEIGHT + SCOREBOARD_HEIGHT + ELEMENT_HEIGHT);
+        sidebar.setMinSize(getBarWidth(), getElementHeight() + getElementHeight() + getScoreBoardHeight() + getElementHeight());
+        sidebar.setMaxSize(getBarWidth(), getElementHeight() + getElementHeight() + getScoreBoardHeight() + getElementHeight());
         HBox titles = constructTitles();
         HBox timers = constructTimers();
-        HBox bottombuttons = constructButtonPanel();
+        HBox bottomButtons = constructButtonPanel();
         setUpNotationGUI();
         HBox notationHBox = new HBox();
         notationHBox.getChildren().add(getNotationTable());
-        notationHBox.setPadding(new Insets(0, BAR_WIDTH * 0.125, 0, BAR_WIDTH * 0.125));
-        sidebar.getChildren().addAll(titles, timers, notationHBox, bottombuttons);
+        notationHBox.setPadding(new Insets(0, getBarWidth() * 0.1, 0, getBarWidth() * 0.1));
+        sidebar.getChildren().addAll(titles, timers, notationHBox, bottomButtons);
         return sidebar;
     }
 
@@ -233,15 +232,15 @@ public class TimedGame extends Game {
      */
     public final HBox constructTimers() {
         HBox timers = new HBox();
-        timers.setMinSize(BAR_WIDTH, ELEMENT_HEIGHT);
-        timers.setMaxSize(BAR_WIDTH, ELEMENT_HEIGHT);
+        timers.setMinSize(getBarWidth(), getElementHeight());
+        timers.setMaxSize(getBarWidth(), getElementHeight());
         whiteTimerGUI.setAlignment(Pos.CENTER);
-        whiteTimerGUI.setMinSize(BAR_WIDTH / 2, ELEMENT_HEIGHT);
-        whiteTimerGUI.setMaxSize(BAR_WIDTH / 2, ELEMENT_HEIGHT);
+        whiteTimerGUI.setMinSize(getBarWidth() / 2, getElementHeight());
+        whiteTimerGUI.setMaxSize(getBarWidth() / 2, getElementHeight());
         whiteTimerGUI.setId("timerbgright");
         blackTimerGUI.setAlignment(Pos.CENTER);
-        blackTimerGUI.setMinSize((BAR_WIDTH / 2)-1, ELEMENT_HEIGHT);
-        blackTimerGUI.setMaxSize((BAR_WIDTH / 2)-1, ELEMENT_HEIGHT);
+        blackTimerGUI.setMinSize((getBarWidth() / 2)-1, getElementHeight());
+        blackTimerGUI.setMaxSize((getBarWidth() / 2)-1, getElementHeight());
         blackTimerGUI.setId("timerbgleft");
         timers.getChildren().addAll(whiteTimerGUI, blackTimerGUI);
         return timers;
@@ -249,16 +248,16 @@ public class TimedGame extends Game {
 
     /**
      * Utility function to convert Timer Integer value to a string
-     * @param seconds
-     * @return 
+     * @param seconds the time to convert
+     * @return string as display format
      */
     private static String convertToDisplayFormat(int seconds) {
-        int minutes = (seconds / 60) <= 99 ? seconds / 60 : 99;
+        int minutes = Math.min((seconds / 60), 99);
         String minString = Integer.toString(minutes);
-        minString = minString.length() > 1 ? Integer.toString(minutes) : "0" + Integer.toString(minutes);
+        minString = minString.length() > 1 ? Integer.toString(minutes) : "0" + minutes;
         int remainder = seconds % 60;
         String secString = Integer.toString(remainder);
-        secString = secString.length() > 1 ? Integer.toString(remainder) : "0" + Integer.toString(remainder);
+        secString = secString.length() > 1 ? Integer.toString(remainder) : "0" + remainder;
         return minString + " : " + secString;
     }
 }

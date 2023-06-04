@@ -51,13 +51,9 @@ public class AudioClipPlayer {
     public void startLoop() {
         mediaPlayer.setMute(true);
         mediaPlayer.play();
-        mediaPlayer.setOnEndOfMedia(() -> {
-            mediaPlayer.stop();
-        });
+        mediaPlayer.setOnEndOfMedia(mediaPlayer::stop);
         soundLoop = new Timeline();
-        soundLoop.getKeyFrames().add(new KeyFrame(Duration.seconds(period), e -> {
-            mediaPlayer.play();
-        }));
+        soundLoop.getKeyFrames().add(new KeyFrame(Duration.seconds(period), e -> mediaPlayer.play()));
         soundLoop.setCycleCount(Timeline.INDEFINITE);
         soundLoop.play();
     }

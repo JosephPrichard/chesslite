@@ -95,7 +95,6 @@
 
 #darkfont {
     -fx-font-family: "Roboto";
-    -fx-font-size:15;
     -fx-font-weight: bold;
     -fx-text-fill: rgb(168,138,101);
     -fx-padding: 3px;
@@ -103,7 +102,6 @@
 
 #lightfont {
     -fx-font-family: "Roboto";
-    -fx-font-size:15;
     -fx-font-weight: bold;
     -fx-text-fill: rgb(233,217,183);
     -fx-padding: 3px;
@@ -269,7 +267,7 @@
 
 #topbar {
     -fx-background-color: rgb(245,245,245);
-    -fx-border-width: 1.5 0 1.25 0; -fx-border-color: rgba(255,255,255,1) transparent rgba(60,60,60,0.2) transparent;
+    -fx-border-width: 1.5 0 1.25 0; -fx-border-color: rgba(255,255,255,0.5) transparent rgba(60,60,60,0.15) transparent;
 }
 
 #darkborder {
@@ -282,7 +280,7 @@
 
 #plyhighlighted {
     -fx-cursor: hand;
-    -fx-background-color: rgba(216,228,245,0.7);
+    -fx-background-color: rgba(216,228,245,0.8);
 }
 
 #boardbutton {

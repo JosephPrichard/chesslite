@@ -14,10 +14,10 @@ public class Move {
     
     public static final String[] NUMBER_TO_LETTER_TABLE = {"a","b","c","d","e","f","g","h"}; //used in conversion to notation
     public static final int NO_CASTLE = 0;
-    public static final int KINGSIDE_CASTLE = 1;
-    public static final int QUEENSIDE_CASTLE = 2;
+    public static final int KING_SIDE_CASTLE = 1;
+    public static final int QUEEN_SIDE_CASTLE = 2;
      
-    private final byte[][] board; //byeboard to be stored
+    private final byte[][] board; //byte board to be stored
     private final int[] oldPos = new int[2];
     private final int[] newPos = new int[2];
     private Piece pieceMoved;
@@ -74,10 +74,10 @@ public class Move {
     
     /**
      * Constructs a new Move
-     * @param oldrow to be moved from
-     * @param oldcol to be moved from 
-     * @param newrow to be moved to
-     * @param newcol to be moved to
+     * @param oldRow to be moved from
+     * @param oldCol to be moved from
+     * @param newRow to be moved to
+     * @param newCol to be moved to
      * @param moved, piece moved on turn
      * @param boardIn, ByteBoard to be stored
      * @param canKingSideCastleIn, whether or not king could castle last Move
@@ -85,12 +85,12 @@ public class Move {
      * @param forWhite, side move is for
      * @param taken whether a piece was taken this turn
      */
-    public Move(int oldrow, int oldcol, int newrow, int newcol, Piece moved, byte[][] boardIn, 
-            boolean canKingSideCastleIn, boolean canQueenSideCastleIn, boolean forWhite, boolean taken) {
-        oldPos[0] = oldrow;
-        oldPos[1] = oldcol;
-        newPos[0] = newrow;
-        newPos[1] = newcol;
+    public Move(int oldRow, int oldCol, int newRow, int newCol, Piece moved, byte[][] boardIn,
+                boolean canKingSideCastleIn, boolean canQueenSideCastleIn, boolean forWhite, boolean taken) {
+        oldPos[0] = oldRow;
+        oldPos[1] = oldCol;
+        newPos[0] = newRow;
+        newPos[1] = newCol;
 	pieceMoved = moved;
         castleStatus = NO_CASTLE;
         board = boardIn;   
@@ -118,18 +118,18 @@ public class Move {
     
     /**
      * Constructs a new Move
-     * @param oldrow to be moved from
-     * @param oldcol to be moved from 
-     * @param newrow to be moved to
-     * @param newcol to be moved to
-     * @param castleType KINGSIDE_CASTLE or QUEENSIDE_CASTLE
+     * @param oldRow to be moved from
+     * @param oldCol to be moved from
+     * @param newRow to be moved to
+     * @param newCol to be moved to
+     * @param castleType KING_SIDE_CASTLE or QUEEN_SIDE_CASTLE
      * @param boardIn, ByteBoard to be stored
      */
-    public Move(int oldrow, int oldcol, int newrow, int newcol, int castleType, byte[][] boardIn) {
-        oldPos[0] = oldrow;
-        oldPos[1] = oldcol;
-        newPos[0] = newrow;
-        newPos[1] = newcol;
+    public Move(int oldRow, int oldCol, int newRow, int newCol, int castleType, byte[][] boardIn) {
+        oldPos[0] = oldRow;
+        oldPos[1] = oldCol;
+        newPos[0] = newRow;
+        newPos[1] = newCol;
         castleStatus = castleType;
         board = boardIn;
         canKingSideCastle = false;
@@ -205,13 +205,13 @@ public class Move {
         return NUMBER_TO_LETTER_TABLE[num];
     }
     
-    public void addRecents(ArrayList<int[]> recentlyMoved) {
+    public void addRecent(ArrayList<int[]> recentlyMoved) {
         recentlyMoved.add(oldPos);
         recentlyMoved.add(newPos);
     }
     
     public static boolean isQueenSide(int type) {
-        return type == QUEENSIDE_CASTLE;
+        return type == QUEEN_SIDE_CASTLE;
     }
     
     public void setEnPassantNot() {

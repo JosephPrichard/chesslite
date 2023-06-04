@@ -4,11 +4,12 @@
  */
 package gui;
 
-import java.util.ArrayList;
 import javafx.animation.TranslateTransition;
 import javafx.geometry.Bounds;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
+
+import java.util.ArrayList;
 
 /**
  *
@@ -16,23 +17,31 @@ import javafx.util.Duration;
  */
 public abstract class Piece extends StackPane {
     
-    /**
+    /*
      * Attack Pattern Key: 
      * Empty - O 
      * Attacking - X 
      * This Piece - other symbol 
      */
     
-    public static final double TILE_SIZE = 100*ChessLite.SCALE;
+    public double tileSize;
     private boolean closeable = false; //will a mouse release close the piece
     private boolean drag; //is the piece currently being dragged
     private double mouseX, mouseY; //position of mouse
     private double oldX, oldY; 
-    private double initialX, initialY; //initial postion when mouse is clicked
+    private double initialX, initialY; //initial position when mouse is clicked
     private final boolean isWhite;
     private Tile tile; //tile piece is on
-    private final ArrayList<Tile> avaliable = new ArrayList<>(); //avaliable tiles of piece used for render
+    private final ArrayList<Tile> available = new ArrayList<>(); //available tiles of piece used for render
 
+    public double getTileSize() {
+        return tileSize;
+    }
+
+    private void setTileSize(double scale) {
+        this.tileSize = 100*scale;
+    }
+    
     public boolean isCloseable() {
         return closeable;
     }
@@ -41,8 +50,8 @@ public abstract class Piece extends StackPane {
         this.closeable = closeable;
     }
 
-    public ArrayList<Tile> getAvaliable() {
-        return avaliable;
+    public ArrayList<Tile> getAvailable() {
+        return available;
     }
     
     public Tile getTile() {
@@ -114,6 +123,7 @@ public abstract class Piece extends StackPane {
         this.setStyle("-fx-cursor: hand;");
         isWhite = isWhiteIn;
         tile = tileIn;
+        setTileSize(tile.getController().getApp().getScale());        
         moveTo(tile);
         setOnMousePressed(e -> {
             doRender();
@@ -133,8 +143,8 @@ public abstract class Piece extends StackPane {
                     mouseX = e.getSceneX();
                     mouseY = e.getSceneY();
                     Bounds pieceBounds = this.localToScene(this.getBoundsInLocal());
-                    double x = e.getSceneX() - (pieceBounds.getMinX() + (Tile.TILE_SIZE / 2)) + oldX;
-                    double y = e.getSceneY() - (pieceBounds.getMinY() + (Tile.TILE_SIZE / 2)) + oldY;
+                    double x = e.getSceneX() - (pieceBounds.getMinX() + (tile.getTileSize() / 2)) + oldX;
+                    double y = e.getSceneY() - (pieceBounds.getMinY() + (tile.getTileSize() / 2)) + oldY;
                     initialX = x;
                     initialY = y;
                     setTranslateX(x);
@@ -146,7 +156,7 @@ public abstract class Piece extends StackPane {
             if(drag) {
                 double x = e.getSceneX() - mouseX + initialX;
                 double y = e.getSceneY() - mouseY + initialY;
-                for(Selectable selectable : getController().getSelectables()) {
+                for(Selectable selectable : getController().getSelectable()) {
                     if(isSelectableCollision(e.getSceneX(), e.getSceneY(), selectable)) {
                         oldX = x;
                         oldY = y;
@@ -161,7 +171,7 @@ public abstract class Piece extends StackPane {
             } else {
                 if (closeable) {
                     closeable = false;
-                    getController().clearSelectables();
+                    getController().clearSelectable();
                 } else {
                     closeable = true;
                 }
@@ -205,8 +215,8 @@ public abstract class Piece extends StackPane {
      * @param tile to move to
      */
     public final void moveTo(Tile tile) {
-        oldX = tile.getxReal();
-        oldY = tile.getyReal();
+        oldX = tile.getXReal();
+        oldY = tile.getYReal();
         setTranslateX(oldX);
         setTranslateY(oldY);
     }
@@ -216,18 +226,18 @@ public abstract class Piece extends StackPane {
      * @param tile to move to
      */
     public final void moveToSlowly(Tile tile) {
-        double x = tile.getxReal() - oldX;
-        double y = tile.getyReal() - oldY;
+        double x = tile.getXReal() - oldX;
+        double y = tile.getYReal() - oldY;
         int time = 150;
-        if(distance(x,y) < ((double)Tile.TILE_SIZE)/2) {
+        if(distance(x,y) < (tile.getTileSize())/2) {
             time = 5;
         }
         TranslateTransition tt = new TranslateTransition(Duration.millis(time), this);
         tt.setByX(x);
         tt.setByY(y);
         tt.play();
-        oldX = tile.getxReal();
-        oldY = tile.getyReal();
+        oldX = tile.getXReal();
+        oldY = tile.getYReal();
     }
     
     /**
@@ -242,7 +252,7 @@ public abstract class Piece extends StackPane {
     
     /**
      * Returns whether a given location is within bounds
-     * @param row of postion
+     * @param row of position
      * @param col of position
      * @return true if in bounds
      */
@@ -265,33 +275,29 @@ public abstract class Piece extends StackPane {
         if(last != null && last.getPiece() != this) {
             last.getPiece().setCloseable(false);
         }
-        getController().clearSelectables();
+        getController().clearSelectable();
         getTile().setSelected();
         getController().setSelectedTile(getTile());
         if (isWhiteTurn == isWhite() && getController().isMoveReady() && !getController().isFinished()
                 && getController().canRender()) {
-            renderSelectables();
+            renderSelectable();
         } else if(isWhiteTurn == isWhite() && !getController().isMoveReady() && getController().canRender()) {
-            renderVisualizables();
+            renderVisualize();
         }
     }
     
     /**
      * Render a list of selectable
      */
-    protected void renderSelectables() {
-        avaliable.forEach((avaliableTile) -> {
-            getController().addSelectable(avaliableTile);
-        });
+    protected void renderSelectable() {
+        available.forEach((availableTile) -> getController().addSelectable(availableTile));
     }
     
     /**
      * Render a list of visuals
      */
-    protected void renderVisualizables() {
-        avaliable.forEach((avaliableTile) -> {
-            getController().addVisualizable(avaliableTile);
-        });
+    protected void renderVisualize() {
+        available.forEach((availableTile) -> getController().addVisualize(availableTile));
     }
     
     /**
@@ -303,25 +309,25 @@ public abstract class Piece extends StackPane {
     public abstract ArrayList<int[]> calcCommonPieceLocations(int[] location);
     
     /**
-     * Calculates the avaliable moves a piece can make on its Game
+     * Calculates the available moves a piece can make on its Game
      * Board and adds them to attributes
      */
-    public abstract void pieceAvaliableMoves();
+    public abstract void pieceAvailableMoves();
     
     /**
-     * Calculates the avaliable moves a piece can make on its Game
+     * Calculates the available moves a piece can make on its Game
      * Board and adds them to attributes
-     * Adds the additional functionality over Piece::pieceAvaliableMoves by checking
+     * Adds the additional functionality over Piece::pieceAvailableMoves by checking
      * if the tiles are within the whiteList
      * @param whiteListed, whiteList used to filter out moves
      */
-    public abstract void pieceAvaliableMoves(ArrayList<Tile> whiteListed);
+    public abstract void pieceAvailableMoves(ArrayList<Tile> whiteListed);
     
     /**
-     * Calculates the avaliable moves for a piece (utilizes access to board through
+     * Calculates the available moves for a piece (utilizes access to board through
      * tile game attribute)
      * 
-     * Clear avaliable moves 
+     * Clear available moves
      * Calculate pinned whiteList 
      * Access whiteLists from Board through Game 
      * If not King and piece is Pinned and tiles attacking king less than 1 
@@ -331,8 +337,8 @@ public abstract class Piece extends StackPane {
      * else If tiles attacking king is empty or is piece is King 
      * calculate moves without whiteList 
      */
-    public void calcAvaliableMoves() {
-        avaliable.clear();
+    public void calcAvailableMoves() {
+        available.clear();
         ArrayList<Tile> attackingKing = getController().getAttackingKing();
         ArrayList<Tile> pinnedWhiteList = new ArrayList<>();
         ArrayList<Tile> attackWhiteListed = getController().getAttackWhiteListed();
@@ -340,11 +346,11 @@ public abstract class Piece extends StackPane {
                 ? getController().getWhiteKing() : getController().getBlackKing();
         boolean isPinned = isPinned(pinnedWhiteList, king);
         if (!isKing() && isPinned && attackingKing.size() < 1) { 
-            pieceAvaliableMoves(pinnedWhiteList);
+            pieceAvailableMoves(pinnedWhiteList);
         } else if (!isKing() && attackingKing.size() == 1 && !isPinned) { 
-            pieceAvaliableMoves(attackWhiteListed);
+            pieceAvailableMoves(attackWhiteListed);
         } else if (attackingKing.isEmpty() || isKing()) {
-            pieceAvaliableMoves();
+            pieceAvailableMoves();
         }
     }
     
@@ -375,7 +381,7 @@ public abstract class Piece extends StackPane {
         Tile[][] tiles = getController().getTiles();
         int row = king.getTile().getRow(); //starts at king
         int col = king.getTile().getCol();
-        if(!normalizeable(getTile().getRow() - king.getTile().getRow(), getTile().getCol() - king.getTile().getCol())) {
+        if(!canNormalize(getTile().getRow() - king.getTile().getRow(), getTile().getCol() - king.getTile().getCol())) {
             return false;
         }
         int r = normalize(getTile().getRow() - king.getTile().getRow()); //normalized trajectory
@@ -432,7 +438,7 @@ public abstract class Piece extends StackPane {
      * @param col to be normalized
      * @return true if can be normalized
      */
-    public boolean normalizeable(int row, int col) {
+    public boolean canNormalize(int row, int col) {
         return Math.abs(row) == Math.abs(col) || row == 0 || col == 0;
     }
     
@@ -450,7 +456,7 @@ public abstract class Piece extends StackPane {
     
     /**
      * Checks if a tile is WhiteListed
-     * @param whitelist to determine avaliable
+     * @param whitelist to determine available
      * @param tile to check
      * @return if a tile is whiteListed, returns true
      */
@@ -460,10 +466,10 @@ public abstract class Piece extends StackPane {
 
     /**
      * Checks if a piece has any legal moves
-     * @return true if avaliable move list is not empty
+     * @return true if available move list is not empty
      */
     protected boolean hasLegalMoves() {
-        return !avaliable.isEmpty();
+        return !available.isEmpty();
     }
     
 }

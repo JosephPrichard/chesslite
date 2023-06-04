@@ -4,14 +4,14 @@
  */
 package gui.pieces;
 
-import gui.ChessLite;
 import gui.Game;
+import gui.GameInfo;
 import gui.Piece;
 import gui.Tile;
-import java.util.ArrayList;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import gui.GameInfo;
+
+import java.util.ArrayList;
 
 /**
  *
@@ -31,37 +31,44 @@ public final class Rook extends Piece{
      * O    O    O    X    O    O    O    O 
      */
     
-    public final String WHITE_ROOK = "/resources/" + ChessLite.PATH + "/whiterook.png";
-    public final String BLACK_ROOK = "/resources/" + ChessLite.PATH + "/blackrook.png";
+    public String whiteRook;
+    public String blackRook;
+    
+    public final void setPaths(String path) {
+        whiteRook = "/resources/" + path + "/whiterook.png";
+        blackRook = "/resources/" + path + "/blackrook.png";
+    }
     
     /**
      * Constructs a Rook
      * 
      * @param isWhite side of the piece
      * @param tile tile piece belongs to
+     * @param path for image
     */
-    public Rook(boolean isWhite, Tile tile) {
+    public Rook(boolean isWhite, Tile tile, String path) {
         super(isWhite, tile);
+        setPaths(path);
         Image image;
         if(isWhite) {
-            image = new Image(WHITE_ROOK);
+            image = new Image(whiteRook);
             
         } else {
-            image = new Image(BLACK_ROOK);
+            image = new Image(blackRook);
         }
         ImageView imageView = new ImageView(image);
-        imageView.setFitHeight(TILE_SIZE);
-        imageView.setFitWidth(TILE_SIZE);
+        imageView.setFitHeight(tileSize);
+        imageView.setFitWidth(tileSize);
         this.getChildren().add(imageView);
     }
     
     @Override
-    public void pieceAvaliableMoves() {
+    public void pieceAvailableMoves() {
         Game controller = getController();
         Tile[][] tiles = controller.getTiles();
         int row = getTile().getRow();
         int col = getTile().getCol();
-        ArrayList<Tile> avaliable = getAvaliable();
+        ArrayList<Tile> available = getAvailable();
         
         int[][] multipliers = {{1,0},{-1,0},{0,1},{0,-1}};
         for(int[] multiplier : multipliers) {
@@ -71,9 +78,9 @@ public final class Rook extends Piece{
                 if(withinBounds(row+(i*multiplier[0]),col+(i*multiplier[1]))) {
                     Tile tile = tiles[row+(i*multiplier[0])][col+(i*multiplier[1])];
                     if((!tile.hasPiece())) {
-                        avaliable.add((tile));
+                        available.add((tile));
                     } else if((tile.getPiece().isWhite() != isWhite())) {
-                        avaliable.add((tile));
+                        available.add((tile));
                         canContinue = false;
                     } else {
                         canContinue = false;
@@ -87,12 +94,12 @@ public final class Rook extends Piece{
     }
     
     @Override
-    public void pieceAvaliableMoves(ArrayList<Tile> whiteList) {
+    public void pieceAvailableMoves(ArrayList<Tile> whiteList) {
         Game controller = getController();
         Tile[][] tiles = controller.getTiles();
         int row = getTile().getRow();
         int col = getTile().getCol();
-        ArrayList<Tile> avaliable = getAvaliable();
+        ArrayList<Tile> available = getAvailable();
         
         int[][] multipliers = {{1,0},{-1,0},{0,1},{0,-1}};
         for(int[] multiplier : multipliers) {
@@ -103,11 +110,11 @@ public final class Rook extends Piece{
                     Tile tile = tiles[row+(i*multiplier[0])][col+(i*multiplier[1])];
                     if((!tile.hasPiece())) {
                         if(whiteListed(whiteList, tile)) {
-                            avaliable.add((tile));
+                            available.add((tile));
                         }
                     } else if((tile.getPiece().isWhite() != isWhite())) {
                         if(whiteListed(whiteList, tile)) {
-                            avaliable.add((tile));
+                            available.add((tile));
                         }
                         canContinue = false;
                     } else {

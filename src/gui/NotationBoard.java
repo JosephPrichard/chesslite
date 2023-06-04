@@ -1,9 +1,8 @@
 /*
- * A class bound to a list of movedata that renders the movedata to be viewed
+ * A class bound to a list of move data that renders the move data to be viewed
  */
 package gui;
 
-import java.util.ArrayList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -13,31 +12,36 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author Joseph
  */
 public class NotationBoard extends ScrollPane{
     
+    private final ChessLite app;
     private final Game game; //controller to redirect flow
-    private final ArrayList<Move> movedata;
-    private final VBox movegui;
+    private final ArrayList<Move> moveData;
+    private final VBox moveGui;
     private final ArrayList<HBox> moves;
-    private Label msglbl;
+    private Label msgLbl;
         
     /**
      * Constructs a NotationBoard liked to a VBox GUI, controller class, and moveList
      * @param movesIn, moves to be rendered on GUI
      * @param verticalIn, GUI to update
      * @param gameIn, controller to redirect flow 
+     * @param app, object for application
      */
-    public NotationBoard(ArrayList<Move> movesIn, VBox verticalIn, Game gameIn) {
+    public NotationBoard(ArrayList<Move> movesIn, VBox verticalIn, Game gameIn, ChessLite app) {
         moves = new ArrayList<>();
-        movedata = movesIn;
-        movegui = verticalIn;
+        moveData = movesIn;
+        moveGui = verticalIn;
         game = gameIn;
         setVvalue(1.0);     
-        movegui.heightProperty().addListener(observable -> setVvalue(1D));
+        moveGui.heightProperty().addListener(observable -> setVvalue(1D));
+        this.app = app;
     }
     
     /**
@@ -45,22 +49,22 @@ public class NotationBoard extends ScrollPane{
      * @param msg to be added
      */
     public void addFinishedMessage(String msg) {
-        msglbl = new Label(msg);
-        msglbl.setPadding(new Insets(10 * ChessLite.SCALE,0,10 * ChessLite.SCALE,0));
-        msglbl.setFont(Font.font("Roboto", FontPosture.ITALIC, 22 * ChessLite.SCALE));
-        msglbl.setMinSize(((Game.BAR_WIDTH*0.65)-(ChessLite.SCALE*25)), 58 * ChessLite.SCALE);
-        msglbl.setMaxSize(((Game.BAR_WIDTH*0.65)-(ChessLite.SCALE*25)), 58 * ChessLite.SCALE);
-        msglbl.setWrapText(true);
-        msglbl.setAlignment(Pos.CENTER);
-        movegui.getChildren().add(msglbl);
+        msgLbl = new Label(msg);
+        msgLbl.setPadding(new Insets(10 * app.getScale(),0,10 * app.getScale(),0));
+        msgLbl.setFont(Font.font("Roboto", FontPosture.ITALIC, 22 * app.getScale()));
+        msgLbl.setMinSize(((game.getBarWidth()*0.8)-(app.getScale()*50)), 58 * app.getScale());
+        msgLbl.setMaxSize(((game.getBarWidth()*0.8)-(app.getScale()*50)), 58 * app.getScale());
+        msgLbl.setWrapText(true);
+        msgLbl.setAlignment(Pos.CENTER);
+        moveGui.getChildren().add(msgLbl);
     }
     
     /** 
      * Remove finished message (needed for takeBack)
      */
     public void removeFinishedMessage() {
-        if(msglbl != null) {
-            movegui.getChildren().remove(msglbl);
+        if(msgLbl != null) {
+            moveGui.getChildren().remove(msgLbl);
         }
     }
     
@@ -68,37 +72,34 @@ public class NotationBoard extends ScrollPane{
      * Add the most recent move on the moveList to VBox GUI
      */
     public void addLastToGUI() {
-        int lastIndex = movedata.size() - 1;
-        String ply = movedata.get(lastIndex).getNotation();
+        int lastIndex = moveData.size() - 1;
+        String ply = moveData.get(lastIndex).getNotation();
         if (lastIndex % 2 == 0) {
             HBox move = new HBox();
-            Label numlbl = new Label(Integer.toString(moves.size() + 1) + ". ");
-            numlbl.setFont(new Font("Roboto", 22*ChessLite.SCALE));
-            numlbl.setMinSize((40*ChessLite.SCALE), 38*ChessLite.SCALE);
-            numlbl.setMaxSize((40*ChessLite.SCALE), 38*ChessLite.SCALE);
-            Label plylbl = new Label(ply);
-            plylbl.setFont(new Font("Roboto", 22*ChessLite.SCALE));
-            plylbl.setId("ply");
-            plylbl.setPadding(new Insets(0,0,0,10));
-            plylbl.setMinSize((90*ChessLite.SCALE), 38*ChessLite.SCALE);
-            plylbl.setMaxSize((90*ChessLite.SCALE), 38*ChessLite.SCALE);
-            plylbl.setOnMouseClicked((event)->{
-                game.goTo(lastIndex);
-            });
-            move.getChildren().addAll(numlbl,plylbl);
-            movegui.getChildren().add(move);
+            Label numLbl = new Label((moves.size() + 1) + ". ");
+            numLbl.setAlignment(Pos.CENTER);
+            numLbl.setFont(new Font("Roboto", 22*app.getScale()));
+            numLbl.setMinSize((50*app.getScale()), 38*app.getScale());
+            numLbl.setMaxSize((50*app.getScale()), 38*app.getScale());
+            Label plyLbl = new Label(ply);
+            plyLbl.setFont(new Font("Roboto", 22*app.getScale()));
+            plyLbl.setId("ply");
+            plyLbl.setPadding(new Insets(0,0,0,10*app.getScale()));
+            plyLbl.setMinSize((90*app.getScale()), 38*app.getScale());
+            plyLbl.setMaxSize((90*app.getScale()), 38*app.getScale());
+            plyLbl.setOnMouseClicked((event)-> game.goTo(lastIndex));
+            move.getChildren().addAll(numLbl, plyLbl);
+            moveGui.getChildren().add(move);
             moves.add(move);
         } else {
-            Label plylbl = new Label(ply);
-            plylbl.setFont(new Font("Roboto", 22*ChessLite.SCALE));
-            plylbl.setId("ply");
-            plylbl.setPadding(new Insets(0,0,0,10));
-            plylbl.setMinSize((90*ChessLite.SCALE), 38*ChessLite.SCALE);
-            plylbl.setMaxSize((90*ChessLite.SCALE), 38*ChessLite.SCALE);
-            plylbl.setOnMouseClicked((event)->{
-                game.goTo(lastIndex);
-            });
-            moves.get(moves.size() - 1).getChildren().add(plylbl);
+            Label plyLbl = new Label(ply);
+            plyLbl.setFont(new Font("Roboto", 22*app.getScale()));
+            plyLbl.setId("ply");
+            plyLbl.setPadding(new Insets(0,0,0,10));
+            plyLbl.setMinSize((90*app.getScale()), 38*app.getScale());
+            plyLbl.setMaxSize((90*app.getScale()), 38*app.getScale());
+            plyLbl.setOnMouseClicked((event)-> game.goTo(lastIndex));
+            moves.get(moves.size() - 1).getChildren().add(plyLbl);
         }
     }
     
@@ -106,9 +107,9 @@ public class NotationBoard extends ScrollPane{
      * Remove the most recent move on the moveList to VBox GUI
      */
     public void removeLastFromGUI() {
-        int lastIndex = movedata.size() - 1;
+        int lastIndex = moveData.size() - 1;
         if (lastIndex % 2 != 0) {
-            movegui.getChildren().remove(moves.get(moves.size() - 1));
+            moveGui.getChildren().remove(moves.get(moves.size() - 1));
             moves.remove(moves.size() - 1);
         } else {
             moves.get(moves.size() - 1).getChildren().remove(2);

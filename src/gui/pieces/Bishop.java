@@ -4,14 +4,14 @@
  */
 package gui.pieces;
 
-import gui.ChessLite;
 import gui.Game;
+import gui.GameInfo;
 import gui.Piece;
 import gui.Tile;
-import java.util.ArrayList;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import gui.GameInfo;
+
+import java.util.ArrayList;
 
 /**
  *
@@ -32,36 +32,43 @@ public final class Bishop extends Piece {
      * 
      */
     
-    public final String WHITE_BISHOP = "/resources/" + ChessLite.PATH + "/whitebishop.png";
-    public final String BLACK_BISHOP = "/resources/" + ChessLite.PATH + "/blackbishop.png";
+    public String whiteBishop;
+    public String blackBishop;
+    
+    public final void setPaths(String path) {
+        whiteBishop = "/resources/" + path + "/whitebishop.png";
+        blackBishop = "/resources/" + path + "/blackbishop.png";
+    }
     
     /**
      * Constructs a Bishop
      * 
      * @param isWhite side of the piece
      * @param tile tile piece belongs to
+     * @param path for image
     */
-    public Bishop(boolean isWhite, Tile tile) {
+    public Bishop(boolean isWhite, Tile tile, String path) {
         super(isWhite, tile);
+        setPaths(path);
         Image image;
         if(isWhite) {
-            image = new Image(WHITE_BISHOP);
+            image = new Image(whiteBishop);
         } else {
-            image = new Image(BLACK_BISHOP);
+            image = new Image(blackBishop);
         }
         ImageView imageView = new ImageView(image);
-        imageView.setFitHeight(TILE_SIZE);
-        imageView.setFitWidth(TILE_SIZE);
+        imageView.setFitHeight(tileSize);
+        imageView.setFitWidth(tileSize);
         this.getChildren().add(imageView);
     }
     
     @Override
-    public void pieceAvaliableMoves() {
+    public void pieceAvailableMoves() {
         Game controller = getController();
         Tile[][] tiles = controller.getTiles();
         int row = getTile().getRow();
         int col = getTile().getCol();
-        ArrayList<Tile> avaliable = getAvaliable();
+        ArrayList<Tile> available = getAvailable();
         
         int[][] multipliers = {{1,1},{-1,1},{1,-1},{-1,-1}};
         for(int[] multiplier : multipliers) {
@@ -71,9 +78,9 @@ public final class Bishop extends Piece {
                 if(withinBounds(row+(i*multiplier[0]),col+(i*multiplier[1]))) {
                     Tile tile = tiles[row+(i*multiplier[0])][col+(i*multiplier[1])];
                     if((!tile.hasPiece())) {
-                        avaliable.add((tile));
+                        available.add((tile));
                     } else if((tile.getPiece().isWhite() != isWhite())) {
-                        avaliable.add((tile));
+                        available.add((tile));
                         canContinue = false;
                     } else {
                         canContinue = false;
@@ -87,12 +94,12 @@ public final class Bishop extends Piece {
     }
     
     @Override
-    public void pieceAvaliableMoves(ArrayList<Tile> whiteList) {
+    public void pieceAvailableMoves(ArrayList<Tile> whiteList) {
         Game controller = getController();
         Tile[][] tiles = controller.getTiles();
         int row = getTile().getRow();
         int col = getTile().getCol();
-        ArrayList<Tile> avaliable = getAvaliable();
+        ArrayList<Tile> available = getAvailable();
 
         int[][] multipliers = {{1,1},{-1,1},{1,-1},{-1,-1}};
         for(int[] multiplier : multipliers) {
@@ -103,11 +110,11 @@ public final class Bishop extends Piece {
                     Tile tile = tiles[row+(i*multiplier[0])][col+(i*multiplier[1])];
                     if((!tile.hasPiece())) {
                         if(whiteListed(whiteList, tile)) {
-                            avaliable.add((tile));
+                            available.add((tile));
                         }
                     } else if((tile.getPiece().isWhite() != isWhite())) {
                         if(whiteListed(whiteList, tile)) {
-                            avaliable.add((tile));
+                            available.add((tile));
                         }
                         canContinue = false;
                     } else {

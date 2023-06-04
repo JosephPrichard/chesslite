@@ -1,5 +1,5 @@
 /*
- * Stores the contents of the game to be readable by the AI, or by the 
+ * Stores the contents of the game to be readable by the 
  * controller's rendering algorithms
  * 7/3/20
  */
@@ -15,7 +15,7 @@ import java.util.ArrayList;
 public class GameInfo {
     
     
-    public static final byte EMPTY = 0; //Bytes used to repreent pieces in ByteBoard
+    public static final byte EMPTY = 0; //Bytes used to represent pieces in ByteBoard
     public static final byte WHITE_PAWN = 1;
     public static final byte WHITE_BISHOP = 2;
     public static final byte WHITE_KNIGHT = 3;
@@ -31,6 +31,7 @@ public class GameInfo {
     
     public static final String[] NUMBER_TO_LETTER_TABLE = {"a","b","c","d","e","f","g","h"}; //convert number to readable format
     public static final String[] NUMBER_TO_FEN = {"","P","B","N","R","Q","K","p","b","n","r","q","k"}; //convert number to FEN format
+    public static final String INITIAL_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -";
     
     public static final byte[][] INITIAL_BOARD = 
                 {{WHITE_ROOK,WHITE_KNIGHT,WHITE_BISHOP,WHITE_QUEEN,WHITE_KING,WHITE_BISHOP,WHITE_KNIGHT,WHITE_ROOK},
@@ -46,7 +47,7 @@ public class GameInfo {
     public static final byte HEIGHT = 8;
     
     private final ArrayList<Move> moves = new ArrayList<>(); //all moves
-    private byte[][] currentBoard = new byte[WIDTH][HEIGHT]; //the current board to perform actions on
+    private byte[][] currentBoard; //the current board to perform actions on
     private int moveNum = -1; //the current move
 
     public int getMoveNum() {
@@ -99,10 +100,7 @@ public class GameInfo {
         }
         if(kingSide && !canKingSideCastle(-1)) {
             return false;
-        } else if(!kingSide && !canQueenSideCastle(-1)) {
-            return false;
-        }
-        return true;
+        } else return kingSide || canQueenSideCastle(-1);
     }
 
     /**
@@ -314,14 +312,14 @@ public class GameInfo {
      */
     public void makeMoveCastleQueenSide(Piece king, Piece rook) {
         Tile kingTile = king.getTile();
-        Tile rooktile = rook.getTile();
+        Tile rookTile = rook.getTile();
         currentBoard[kingTile.getRow()][kingTile.getCol()-2] = currentBoard[kingTile.getRow()][kingTile.getCol()];
-        currentBoard[rooktile.getRow()][rooktile.getCol()+3] = currentBoard[rook.getTile().getRow()][rook.getTile().getCol()];
+        currentBoard[rookTile.getRow()][rookTile.getCol()+3] = currentBoard[rook.getTile().getRow()][rook.getTile().getCol()];
         currentBoard[kingTile.getRow()][kingTile.getCol()] = EMPTY;
-        currentBoard[rooktile.getRow()][rooktile.getCol()] = EMPTY;
+        currentBoard[rookTile.getRow()][rookTile.getCol()] = EMPTY;
         moveNum++;
         Move move = new Move(kingTile.getRow(), kingTile.getCol(), kingTile.getRow(), kingTile.getCol()-2,
-                Move.QUEENSIDE_CASTLE, cloneArray(currentBoard));
+                Move.QUEEN_SIDE_CASTLE, cloneArray(currentBoard));
         moves.add(move);  
     }
     
@@ -337,14 +335,14 @@ public class GameInfo {
      */
     public void makeMoveCastleKingSide(Piece king, Piece rook) {
         Tile kingTile = king.getTile();
-        Tile rooktile = rook.getTile();
+        Tile rookTile = rook.getTile();
         currentBoard[kingTile.getRow()][kingTile.getCol()+2] = currentBoard[kingTile.getRow()][kingTile.getCol()];
-        currentBoard[rooktile.getRow()][rooktile.getCol()-2] = currentBoard[rook.getTile().getRow()][rook.getTile().getCol()];
+        currentBoard[rookTile.getRow()][rookTile.getCol()-2] = currentBoard[rook.getTile().getRow()][rook.getTile().getCol()];
         currentBoard[kingTile.getRow()][kingTile.getCol()] = EMPTY;
-        currentBoard[rooktile.getRow()][rooktile.getCol()] = EMPTY;
+        currentBoard[rookTile.getRow()][rookTile.getCol()] = EMPTY;
         moveNum++;
         Move move = new Move(kingTile.getRow(), kingTile.getCol(), kingTile.getRow(), kingTile.getCol()+2,
-                Move.KINGSIDE_CASTLE, cloneArray(currentBoard));
+                Move.KING_SIDE_CASTLE, cloneArray(currentBoard));
         moves.add(move); 
     }
 
@@ -352,14 +350,14 @@ public class GameInfo {
      * Return the positions of the tiles involved in the most recent move
      * @return positions of the old and new tile, in that order
      */
-    public ArrayList<int[]> getRecentlyMovedTileCoords() {
+    public ArrayList<int[]> getRecentlyMovedTileCoordinates() {
         if(moveNum < 0) {
             return new ArrayList<>();
         }
         Move currentMove = moves.get(moveNum);
-        ArrayList<int[]> recentlymoved = new ArrayList<>();
-        currentMove.addRecents(recentlymoved);
-        return recentlymoved;
+        ArrayList<int[]> recentlyMoved = new ArrayList<>();
+        currentMove.addRecent(recentlyMoved);
+        return recentlyMoved;
     }
     
     public void setRecentPromotion(Piece promotionTo) {
@@ -397,19 +395,19 @@ public class GameInfo {
      */
     public String getMoveFEN() {
         if(moveNum < 0) {
-            return "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -";
+            return INITIAL_FEN;
         }
         Move move = moves.get(moveNum);
         byte[][] board = move.getBoard();
-        String FEN = "";
+        StringBuilder FEN = new StringBuilder();
         int spaceCount = 0;
-        for(int i = Game.WIDTH-1; i >= 0; i--) {
-            for(int j = 0; j < Game.HEIGHT; j++) {
+        for(int i = Game.HEIGHT-1; i >= 0; i--) {
+            for(int j = 0; j < Game.WIDTH; j++) {
                 if(board[i][j] != EMPTY) {
                     if(spaceCount != 0) {
-                        FEN = FEN + spaceCount;
+                        FEN.append(spaceCount);
                     } 
-                    FEN = FEN + NUMBER_TO_FEN[board[i][j]];
+                    FEN.append(NUMBER_TO_FEN[board[i][j]]);
                     spaceCount = 0;
                 } else {
                     spaceCount++;
@@ -417,54 +415,58 @@ public class GameInfo {
             }
             if(i != 0) {
                 if (spaceCount != 0) {
-                    FEN = FEN + spaceCount;
+                    FEN.append(spaceCount);
                 }
                 spaceCount = 0;
-                FEN = FEN + "/";
+                FEN.append("/");
             }
         }
         boolean boolIsWhite = moveNum % 2 == 0;
         String isWhite = boolIsWhite ? " b" : " w";
-        FEN = FEN + isWhite;
-        boolean whiteQueenSide;
-        boolean whiteKingSide;
-        boolean blackQueenSide;
-        boolean blackKingSide;
+        FEN.append(isWhite);
+        boolean whiteQueenSide = true;
+        boolean whiteKingSide = true;
+        boolean blackQueenSide = true;
+        boolean blackKingSide = true;
         boolean whiteKingMoved = hasKingMoved(true);
         boolean blackKingMoved = hasKingMoved(false);
-        Move checkWhite = boolIsWhite ? moves.get(moveNum) : moves.get(moveNum - 1);
-        Move checkBlack = boolIsWhite ? moves.get(moveNum - 1) : moves.get(moveNum);
-        whiteKingSide = checkWhite.canKingSideCastle() && whiteKingMoved;
-        whiteQueenSide = checkWhite.canQueenSideCastle() && whiteKingMoved;
-        blackKingSide = checkBlack.canKingSideCastle() && blackKingMoved;
-        blackQueenSide = checkBlack.canQueenSideCastle() && blackKingMoved;
+        Move checkWhite;
+        Move checkBlack;
+        if(moveNum > 0) {
+            checkWhite = boolIsWhite ? moves.get(moveNum) : moves.get(moveNum - 1);
+            checkBlack = boolIsWhite ? moves.get(moveNum - 1) : moves.get(moveNum);
+            whiteKingSide = checkWhite.canKingSideCastle() && whiteKingMoved;
+            whiteQueenSide = checkWhite.canQueenSideCastle() && whiteKingMoved;
+            blackKingSide = checkBlack.canKingSideCastle() && blackKingMoved;
+            blackQueenSide = checkBlack.canQueenSideCastle() && blackKingMoved;
+        } 
         if(whiteQueenSide || whiteKingSide || blackQueenSide || blackKingSide) {
             String K = whiteKingSide ? "K" : "";
             String Q = whiteQueenSide ? "Q" : "";
             String k = blackKingSide ? "k" : "";
             String q = blackQueenSide ? "q" : "";
-            FEN = FEN + " " + K + Q + k + q;
+            FEN.append(" ").append(K).append(Q).append(k).append(q);
         } else {
-            FEN = FEN + " -";
+            FEN.append(" -");
         }
         if(moveNum != -1) {
             if(move.canEnPassant(boolIsWhite)) {
                 int row = move.getNewPos()[0]+1;
                 int col = move.getNewPos()[1];
                 if(boolIsWhite) {
-                    int passantrow = row-1;
-                    FEN = FEN + " "+ NUMBER_TO_LETTER_TABLE[col] + passantrow;
+                    int passantRow = row-1;
+                    FEN.append(" ").append(NUMBER_TO_LETTER_TABLE[col]).append(passantRow);
                 } else {
-                    int passantrow = row+1;
-                    FEN = FEN + " " + NUMBER_TO_LETTER_TABLE[col] + passantrow;
+                    int passantRow = row+1;
+                    FEN.append(" ").append(NUMBER_TO_LETTER_TABLE[col]).append(passantRow);
                 }
             } else {
-                FEN = FEN + " -";
+                FEN.append(" -");
             }
         } else {
-            FEN = FEN + " -";
+            FEN.append(" -");
         }
-        return FEN;
+        return FEN.toString();
     }
     
     /**
@@ -473,19 +475,19 @@ public class GameInfo {
      * @return PGN as a string
      */
     public String getGamePGN(String result) {
-        String PGN = getPGNHeaders(result);
+        StringBuilder PGN = new StringBuilder(getPGNHeaders(result));
         int i = 0;
         for(Move move : moves) {
             if(i % 10 == 0) {
-                PGN = PGN + "\n";
+                PGN.append("\n");
             }
             if(i % 2 == 0) {
-                PGN = PGN + " " + (int)((i/2)+1) + ".";
+                PGN.append(" ").append(((i / 2) + 1)).append(".");
             }
-            PGN = PGN + " " + move.getNotation();
+            PGN.append(" ").append(move.getNotation());
             i++;
         } 
-        return PGN;
+        return PGN.toString();
     }
     
     /**
@@ -494,13 +496,12 @@ public class GameInfo {
      * @return headers as a string
      */
     public String getPGNHeaders(String result) {
-        String headers = "[Event \"ChessLite Practice\"]\n"
+        return "[Event \"ChessLite Practice\"]\n"
                 + "[Site \"ChessLite GUI\"]\n"
                 + "[Date \"" + getDate() + "\"]\n"
                 + "[White \"Player1\"]\n"
                 + "[Black \"Player2\"]\n"
                 + result + "\n";
-        return headers;
     }
     
     /**
@@ -528,3 +529,4 @@ public class GameInfo {
     }
     
 }
+

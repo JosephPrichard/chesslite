@@ -11,6 +11,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
+import javafx.scene.text.Font;
+
+import java.util.Objects;
 
 /**
  *
@@ -18,7 +21,6 @@ import javafx.scene.shape.Shape;
  */
 public final class Tile extends StackPane {
 
-    public static final double TILE_SIZE = 100*ChessLite.SCALE;
     public static final Color CHECK = Color.rgb(139,0,0,0.7);
     public static final Color CHECK_ORANGE = Color.rgb(200,120,0,0.7);
     public static final Color LIGHT_SELECTED = Color.rgb(233,217,0,0.2);
@@ -38,6 +40,8 @@ public final class Tile extends StackPane {
     public static final Color LIGHTER = Color.rgb(223,223,211);
     public static final Color HIGHLIGHT = Color.rgb(233,217,100,0.5);
     public static final Color BLUE_HIGHLIGHT = Color.rgb(85,156,185,0.7);
+    
+    public double tileSize;
     private int rowBoard; //position relative to board
     private int colBoard;
     private double xReal; //real GUI position
@@ -49,6 +53,14 @@ public final class Tile extends StackPane {
     private final Rectangle rec; //rendered shapes
     private final Rectangle highlight;
     private final Shape checkShape;
+    
+    public double getTileSize() {
+        return tileSize;
+    }
+
+    private void setTileSize(double scale) {
+        this.tileSize = 100*scale;
+    }
 
     public Game getController() {
         return controller;
@@ -78,11 +90,11 @@ public final class Tile extends StackPane {
         this.colBoard = colBoard;
     }
 
-    public void setxReal(double xReal) {
+    public void setXReal(double xReal) {
         this.xReal = xReal;
     }
 
-    public void setyReal(double yReal) {
+    public void setYReal(double yReal) {
         this.yReal = yReal;
     }
 
@@ -98,11 +110,11 @@ public final class Tile extends StackPane {
         return colBoard;
     }
 
-    public double getxReal() {
+    public double getXReal() {
         return xReal;
     }
 
-    public double getyReal() {
+    public double getYReal() {
         return yReal;
     }
 
@@ -115,7 +127,7 @@ public final class Tile extends StackPane {
     }
     
     public boolean hasKing() {
-        return hasPiece() && getPiece().isKing();
+        return hasPiece() && Objects.requireNonNull(getPiece()).isKing();
     }
     
     /**
@@ -128,12 +140,13 @@ public final class Tile extends StackPane {
         } else {
             lbl.setId("lightfont");
         }
+        lbl.setFont(new Font("Roboto",17*getController().getApp().getScale()));
         this.getChildren().add(lbl);
     }
     
-    public static Color getHighlight() {
+    public Color getHighlight() {
         Color[] colors = {HIGHLIGHT, BLUE_HIGHLIGHT, HIGHLIGHT, HIGHLIGHT};
-        return colors[ChessLite.COLOR_THEME];
+        return colors[controller.getApp().getColorTheme()];
     }
     
     public void setHighLighted() {
@@ -144,28 +157,28 @@ public final class Tile extends StackPane {
         highlight.setFill(Color.TRANSPARENT);
     }
     
-    public static Color getDarkColor() {
+    public Color getDarkColor() {
         Color[] colors = {DARK_BROWN, DARK_BLUE, DARK_GREEN, DARK_RED};
-        return colors[ChessLite.COLOR_THEME];
+        return colors[controller.getApp().getColorTheme()];
     }
     
-    public static Color getLightColor() {
+    public Color getLightColor() {
         Color[] colors = {LIGHT, LIGHTER, LIGHTER, LIGHTER};
-        return colors[ChessLite.COLOR_THEME];
+        return colors[controller.getApp().getColorTheme()];
     }
     
-    public static Color getDarkSelectedColor() {
+    public Color getDarkSelectedColor() {
         Color[] colors = {SELECTED_DARK_0,SELECTED_DARK_1,SELECTED_DARK_2,SELECTED_DARK_3};
-        return colors[ChessLite.COLOR_THEME];
+        return colors[controller.getApp().getColorTheme()];
     }
     
-    public static Color getLightSelectedColor() {
+    public Color getLightSelectedColor() {
         Color[] colors = {SELECTED_LIGHT_0,SELECTED_LIGHT_1,SELECTED_LIGHT_2,SELECTED_LIGHT_3};
-        return colors[ChessLite.COLOR_THEME];
+        return colors[controller.getApp().getColorTheme()];
     }
-    public static Color getCheckColor() {
+    public Color getCheckColor() {
         Color[] colors = {CHECK,CHECK,CHECK,CHECK_ORANGE};
-        return colors[ChessLite.COLOR_THEME];
+        return colors[controller.getApp().getColorTheme()];
     }
     
     public void setUnselectedNoReset() {
@@ -226,18 +239,19 @@ public final class Tile extends StackPane {
      * flow back to
      */
     public Tile(boolean light, int row, int col, boolean boardIsWhite, Game controller) {
+        setTileSize(controller.getApp().getScale());
         this.isLight = light;
         this.rowBoard = row;
         this.colBoard = col;
         this.controller = controller;
         
         if(boardIsWhite) {
-            xReal = col * TILE_SIZE;
-            yReal = ((Game.HEIGHT-1) * Tile.TILE_SIZE) - (row * TILE_SIZE);
+            xReal = col * tileSize;
+            yReal = ((Game.WIDTH-1) * tileSize) - (row * tileSize);
             relocate(xReal, yReal);
         } else {
-            xReal = ((Game.WIDTH-1) * Tile.TILE_SIZE) - (col * TILE_SIZE);
-            yReal = row * TILE_SIZE;
+            xReal = ((Game.HEIGHT-1) * tileSize) - (col * tileSize);
+            yReal = row * tileSize;
             relocate(xReal, yReal);
         }
         
@@ -246,22 +260,22 @@ public final class Tile extends StackPane {
             if (last != null) {
                 last.getPiece().setCloseable(false);
             }
-            getController().clearSelectables();
+            getController().clearSelectable();
         });
         
         rec = new Rectangle();
-        rec.setWidth(TILE_SIZE);
-        rec.setHeight(TILE_SIZE);
+        rec.setWidth(tileSize);
+        rec.setHeight(tileSize);
         setUnselected();
         
         highlight = new Rectangle();
-        highlight.setWidth(TILE_SIZE);
-        highlight.setHeight(TILE_SIZE);
+        highlight.setWidth(tileSize);
+        highlight.setHeight(tileSize);
         setUnHighLighted();
         
-        Rectangle rect = new Rectangle(0, 0, TILE_SIZE, TILE_SIZE);
-        Circle circ = new Circle(TILE_SIZE / 2, TILE_SIZE / 2, Math.min(TILE_SIZE, TILE_SIZE) / 2);
-        checkShape = Shape.subtract(rect, circ);
+        Rectangle rect = new Rectangle(0, 0, tileSize, tileSize);
+        Circle round = new Circle(tileSize / 2, tileSize / 2, (tileSize) / 2);
+        checkShape = Shape.subtract(rect, round);
         checkShape.setFill(getCheckColor());
         
         Label testLabel = new Label(row + "," + col);
